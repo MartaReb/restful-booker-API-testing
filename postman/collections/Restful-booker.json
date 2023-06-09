@@ -12,24 +12,34 @@
 				{
 					"listen": "test",
 					"script": {
+						"id": "e39400f4-20c0-45d3-83f6-719a8c6cd766",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
 							"});\r",
-							""
+							"\r",
+							"pm.test(\"At least one booking exists\", () => {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response).to.be.an('array');\r",
+							"    pm.expect(response.length).to.be.above(0);\r",
+							"\r",
+							"    const booking = response[0];\r",
+							"    pm.expect(booking).to.be.an('object');\r",
+							"    pm.expect(booking).to.haveOwnProperty('bookingid');\r",
+							"    pm.expect(booking.bookingid).to.be.a('number');\r",
+							"});"
 						],
-						"type": "text/javascript",
-						"id": "e39400f4-20c0-45d3-83f6-719a8c6cd766"
+						"type": "text/javascript"
 					}
 				},
 				{
 					"listen": "prerequest",
 					"script": {
+						"id": "a8d42719-a846-4f65-8f36-f07743a21a01",
 						"exec": [
 							""
 						],
-						"type": "text/javascript",
-						"id": "a8d42719-a846-4f65-8f36-f07743a21a01"
+						"type": "text/javascript"
 					}
 				}
 			],
@@ -58,15 +68,24 @@
 				{
 					"listen": "test",
 					"script": {
+						"id": "5ab732fe-4d43-46d9-bdc9-4b4eb3a458ea",
 						"exec": [
-							"pm.test(\"Status code is 200\", function () {\r",
+							"pm.test(\"Status code is 200\", () => {\r",
 							"    pm.response.to.have.status(200);\r",
 							"});\r",
 							"\r",
+							"const response = pm.response.json();\r",
+							"pm.test(\"At least one booking exists\", () => {\r",
+							"    pm.expect(response).to.be.an('array');\r",
+							"    pm.expect(response).is.not.empty;\r",
+							"    pm.expect(response[0]).to.have.property('bookingid');\r",
+							"    pm.expect(response[0].bookingid).to.be.a('number');\r",
+							"});\r",
+							"\r",
+							"pm.globals.set(\"bookingID\", response[0].bookingid);\r",
 							""
 						],
-						"type": "text/javascript",
-						"id": "5ab732fe-4d43-46d9-bdc9-4b4eb3a458ea"
+						"type": "text/javascript"
 					}
 				}
 			],
@@ -96,19 +115,92 @@
 			"response": []
 		},
 		{
+			"name": "Get booking with the specific ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "39c6fe26-5a56-4ff6-bf9f-d482406131f6",
+						"exec": [
+							"pm.test(\"Status code is 200\", () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const schema = {\r",
+							"    \"type\": \"object\",\r",
+							"    \"properties\": {\r",
+							"        \"firstname\": {\"type\": \"string\"},\r",
+							"        \"lastname\": {\"type\": \"string\"},\r",
+							"        \"totalprice\": {\"type\": \"number\"},\r",
+							"        \"depositpaid\": {\"type\": \"boolean\"},\r",
+							"        \"bookingdates\": {\r",
+							"            \"checkin\": {\"type\": \"date\"},\r",
+							"            \"checkout\": {\"type\": \"date\"}\r",
+							"        },\r",
+							"        \"additionalneeds\": {\"type\": \"string\"},\r",
+							"    }\r",
+							"}\r",
+							"\r",
+							"pm.test(\"Validate response schema\", () =>  {\r",
+							"    pm.response.to.have.jsonSchema(schema);\r",
+							"});\r",
+							"\r",
+							"const response = pm.response.json();\r",
+							"pm.test(\"Specific first name\", () => {\r",
+							"    pm.expect(response.firstname).to.eql(\"Sally\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "1bee1c79-4593-4005-acea-cf4a8a049538",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/booking/:id",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"booking",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{bookingID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get IDs of the booking with the specific check in and check out",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
+						"id": "cf4d714b-ea2c-472b-9fee-b2bc0218b4d1",
 						"exec": [
-							"pm.test(\"Status code is 200\", function () {\r",
+							"pm.test(\"Status code is 200\", () => {\r",
 							"    pm.response.to.have.status(200);\r",
 							"});\r",
-							""
+							"\r",
+							"const response = pm.response.json();\r",
+							"pm.test(\"At least one booking exists\", () => {\r",
+							"    pm.expect(response).to.be.an('array');\r",
+							"    pm.expect(response).is.not.empty;\r",
+							"    pm.expect(response[0]).to.have.property('bookingid');\r",
+							"    pm.expect(response[0].bookingid).to.be.a('number');\r",
+							"});"
 						],
-						"type": "text/javascript",
-						"id": "cf4d714b-ea2c-472b-9fee-b2bc0218b4d1"
+						"type": "text/javascript"
 					}
 				}
 			],
@@ -147,8 +239,9 @@
 				{
 					"listen": "test",
 					"script": {
+						"id": "5023265c-ff31-4edc-a165-4d4bcdbb06d1",
 						"exec": [
-							"pm.test(\"Status code is 200\", function () {\r",
+							"pm.test(\"Status code is 200\", () => {\r",
 							"    pm.response.to.have.status(200);\r",
 							"});\r",
 							"\r",
@@ -156,8 +249,7 @@
 							"\r",
 							"pm.environment.set(\"authToken\", response.token);"
 						],
-						"type": "text/javascript",
-						"id": "5023265c-ff31-4edc-a165-4d4bcdbb06d1"
+						"type": "text/javascript"
 					}
 				}
 			],
@@ -195,27 +287,27 @@
 				{
 					"listen": "test",
 					"script": {
+						"id": "529192dc-9934-4624-bfa6-1e8e12b95daa",
 						"exec": [
-							"pm.test(\"Status code is 200\", function () {\r",
+							"pm.test(\"Status code is 200\", () => {\r",
 							"    pm.response.to.have.status(200);\r",
 							"});\r",
 							"\r",
 							"const response = pm.response.json();\r",
 							"\r",
-							"pm.environment.set(\"bookingID\", response.bookingid);"
+							"pm.globals.set(\"bookingID\", response.bookingid);"
 						],
-						"type": "text/javascript",
-						"id": "529192dc-9934-4624-bfa6-1e8e12b95daa"
+						"type": "text/javascript"
 					}
 				},
 				{
 					"listen": "prerequest",
 					"script": {
+						"id": "7a87bc0b-6faf-4d74-be20-eb926677b98c",
 						"exec": [
 							""
 						],
-						"type": "text/javascript",
-						"id": "7a87bc0b-6faf-4d74-be20-eb926677b98c"
+						"type": "text/javascript"
 					}
 				}
 			],
@@ -253,14 +345,14 @@
 				{
 					"listen": "test",
 					"script": {
+						"id": "db50acf7-77ce-4324-b520-833d0dec5d7d",
 						"exec": [
-							"pm.test(\"Status code is 200\", function () {\r",
+							"pm.test(\"Status code is 200\", () => {\r",
 							"    pm.response.to.have.status(200);\r",
 							"});\r",
 							""
 						],
-						"type": "text/javascript",
-						"id": "db50acf7-77ce-4324-b520-833d0dec5d7d"
+						"type": "text/javascript"
 					}
 				}
 			],
@@ -302,14 +394,14 @@
 				{
 					"listen": "test",
 					"script": {
+						"id": "a2014bad-ff02-4fba-9797-120546fb26a9",
 						"exec": [
-							"pm.test(\"Status code is 200\", function () {\r",
+							"pm.test(\"Status code is 200\", () => {\r",
 							"    pm.response.to.have.status(200);\r",
 							"});\r",
 							""
 						],
-						"type": "text/javascript",
-						"id": "a2014bad-ff02-4fba-9797-120546fb26a9"
+						"type": "text/javascript"
 					}
 				}
 			],
@@ -370,14 +462,14 @@
 				{
 					"listen": "test",
 					"script": {
+						"id": "a7f12b60-ec92-4052-9751-d25427685110",
 						"exec": [
-							"pm.test(\"Status code is 200\", function () {\r",
+							"pm.test(\"Status code is 200\", () => {\r",
 							"    pm.response.to.have.status(200);\r",
 							"});\r",
 							""
 						],
-						"type": "text/javascript",
-						"id": "a7f12b60-ec92-4052-9751-d25427685110"
+						"type": "text/javascript"
 					}
 				}
 			],
@@ -438,15 +530,15 @@
 				{
 					"listen": "test",
 					"script": {
+						"id": "fc2feb84-68db-4ea7-95ff-2244c6b8c9f6",
 						"exec": [
-							"pm.test(\"Status code is 201\", function () {\r",
+							"pm.test(\"Status code is 201\", () => {\r",
 							"    pm.response.to.have.status(201);\r",
 							"});\r",
 							"\r",
 							"pm.environment.unset(\"authToken\");"
 						],
-						"type": "text/javascript",
-						"id": "fc2feb84-68db-4ea7-95ff-2244c6b8c9f6"
+						"type": "text/javascript"
 					}
 				}
 			],

@@ -7,6 +7,41 @@
 	},
 	"item": [
 		{
+			"name": "Health Check",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "34b9e8e0-93af-43b8-a7b2-bd48d7495426",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "afc795ba-43bc-42a3-93d1-72ef0405f099",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/ping",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"ping"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get ID numbers for all booking",
 			"event": [
 				{
@@ -18,8 +53,8 @@
 							"    pm.response.to.have.status(200);\r",
 							"});\r",
 							"\r",
+							"const response = pm.response.json();\r",
 							"pm.test(\"At least one booking exists\", () => {\r",
-							"    const response = pm.response.json();\r",
 							"    pm.expect(response).to.be.an('array');\r",
 							"    pm.expect(response.length).to.be.above(0);\r",
 							"\r",
@@ -27,7 +62,9 @@
 							"    pm.expect(booking).to.be.an('object');\r",
 							"    pm.expect(booking).to.haveOwnProperty('bookingid');\r",
 							"    pm.expect(booking.bookingid).to.be.a('number');\r",
-							"});"
+							"});\r",
+							"\r",
+							"pm.environment.set(\"bookingID\", response[0].bookingid);"
 						],
 						"type": "text/javascript"
 					}
@@ -57,58 +94,6 @@
 					],
 					"path": [
 						"booking"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get IDs of the booking with the specific firstname",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "5ab732fe-4d43-46d9-bdc9-4b4eb3a458ea",
-						"exec": [
-							"pm.test(\"Status code is 200\", () => {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"\r",
-							"const response = pm.response.json();\r",
-							"pm.test(\"At least one booking exists\", () => {\r",
-							"    pm.expect(response).to.be.an('array');\r",
-							"    pm.expect(response).is.not.empty;\r",
-							"    pm.expect(response[0]).to.have.property('bookingid');\r",
-							"    pm.expect(response[0].bookingid).to.be.a('number');\r",
-							"});\r",
-							"\r",
-							"pm.globals.set(\"bookingID\", response[0].bookingid);\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"id": "0c6b1779-8d42-4527-8b23-34314c0f3a33",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{baseURL}}/booking?firstname=Sally",
-					"host": [
-						"{{baseURL}}"
-					],
-					"path": [
-						"booking"
-					],
-					"query": [
-						{
-							"key": "firstname",
-							"value": "Sally"
-						}
 					]
 				}
 			},
@@ -146,9 +131,11 @@
 							"});\r",
 							"\r",
 							"const response = pm.response.json();\r",
-							"pm.test(\"Specific first name\", () => {\r",
-							"    pm.expect(response.firstname).to.eql(\"Sally\");\r",
-							"});"
+							"pm.environment.set(\"firstname\", response.firstname);\r",
+							"pm.environment.set(\"lastname\", response.lastname);\r",
+							"\r",
+							"\r",
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -181,12 +168,12 @@
 			"response": []
 		},
 		{
-			"name": "Get IDs of the booking with the specific check in and check out",
+			"name": "Get IDs of the booking with the specific first name and last name",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "cf4d714b-ea2c-472b-9fee-b2bc0218b4d1",
+						"id": "5ab732fe-4d43-46d9-bdc9-4b4eb3a458ea",
 						"exec": [
 							"pm.test(\"Status code is 200\", () => {\r",
 							"    pm.response.to.have.status(200);\r",
@@ -198,13 +185,14 @@
 							"    pm.expect(response).is.not.empty;\r",
 							"    pm.expect(response[0]).to.have.property('bookingid');\r",
 							"    pm.expect(response[0].bookingid).to.be.a('number');\r",
-							"});"
+							"});\r",
+							""
 						],
 						"type": "text/javascript"
 					}
 				}
 			],
-			"id": "51de8378-fa41-4c89-b3eb-bafe9dcbc133",
+			"id": "0c6b1779-8d42-4527-8b23-34314c0f3a33",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -212,7 +200,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseURL}}/booking?checkin=2018-04-01&checkout=2019-04-01",
+					"raw": "{{baseURL}}/booking?firstname={{firstname}}&lastname={{lastname}}",
 					"host": [
 						"{{baseURL}}"
 					],
@@ -221,12 +209,12 @@
 					],
 					"query": [
 						{
-							"key": "checkin",
-							"value": "2018-04-01"
+							"key": "firstname",
+							"value": "{{firstname}}"
 						},
 						{
-							"key": "checkout",
-							"value": "2019-04-01"
+							"key": "lastname",
+							"value": "{{lastname}}"
 						}
 					]
 				}
@@ -246,7 +234,10 @@
 							"});\r",
 							"\r",
 							"const response = pm.response.json();\r",
-							"\r",
+							"pm.test(\"An access token is returned\", () => {\r",
+							"    pm.expect(response).to.have.property('token');\r",
+							"    pm.expect(response.token).to.be.a('string');\r",
+							"});\r",
 							"pm.environment.set(\"authToken\", response.token);"
 						],
 						"type": "text/javascript"
@@ -295,7 +286,7 @@
 							"\r",
 							"const response = pm.response.json();\r",
 							"\r",
-							"pm.globals.set(\"bookingID\", response.bookingid);"
+							"pm.environment.set(\"bookingID\", response.bookingid);"
 						],
 						"type": "text/javascript"
 					}
@@ -320,7 +311,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"firstname\" : \"John\",\r\n    \"lastname\" : \"Travolta\",\r\n    \"totalprice\" : 234,\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n        \"checkin\" : \"2020-06-20\",\r\n        \"checkout\" : \"2020-06-30\"\r\n    },\r\n    \"additionalneeds\" : \"Breakfast\"\r\n}",
+					"raw": "{\r\n    \"firstname\" : \"John\",\r\n    \"lastname\" : \"Travolta\",\r\n    \"totalprice\" : 234,\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n        \"checkin\" : \"2018-06-20\",\r\n        \"checkout\" : \"2018-06-30\"\r\n    },\r\n    \"additionalneeds\" : \"Breakfast\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -382,6 +373,59 @@
 						{
 							"key": "id",
 							"value": "{{bookingID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get IDs of the booking with the specific check in and check out",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cf4d714b-ea2c-472b-9fee-b2bc0218b4d1",
+						"exec": [
+							"pm.test(\"Status code is 200\", () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const response = pm.response.json();\r",
+							"pm.test(\"At least one booking exists\", () => {\r",
+							"    pm.expect(response).to.be.an('array');\r",
+							"    pm.expect(response).is.not.empty;\r",
+							"    pm.expect(response[0]).to.have.property('bookingid');\r",
+							"    pm.expect(response[0].bookingid).to.be.a('number');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "51de8378-fa41-4c89-b3eb-bafe9dcbc133",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/booking?checkin=2018-01-01&checkout=2019-01-01",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"booking"
+					],
+					"query": [
+						{
+							"key": "checkin",
+							"value": "2018-01-01"
+						},
+						{
+							"key": "checkout",
+							"value": "2019-01-01"
 						}
 					]
 				}

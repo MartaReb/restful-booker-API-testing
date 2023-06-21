@@ -133,8 +133,6 @@
 							"const response = pm.response.json();\r",
 							"pm.environment.set(\"firstname\", response.firstname);\r",
 							"pm.environment.set(\"lastname\", response.lastname);\r",
-							"\r",
-							"\r",
 							""
 						],
 						"type": "text/javascript"
@@ -285,6 +283,17 @@
 							"});\r",
 							"\r",
 							"const response = pm.response.json();\r",
+							"pm.test(\"Booking should be created\", () => {\r",
+							"    pm.expect(response).to.be.an('object');\r",
+							"    pm.expect(response).is.not.empty;\r",
+							"    pm.expect(response.booking.firstname).to.eql(\"John\");\r",
+							"    pm.expect(response.booking.lastname).to.eql(\"Travolta\");\r",
+							"    pm.expect(response.booking.totalprice).to.eql(234);\r",
+							"    pm.expect(response.booking.depositpaid).to.eql(true);\r",
+							"    pm.expect(response.booking.bookingdates.checkin).to.eql(\"2018-06-20\");\r",
+							"    pm.expect(response.booking.bookingdates.checkout).to.eql(\"2018-06-30\");\r",
+							"    pm.expect(response.booking.additionalneeds).to.eql(\"Breakfast\");\r",
+							"});\r",
 							"\r",
 							"pm.environment.set(\"bookingID\", response.bookingid);"
 						],
@@ -325,55 +334,6 @@
 					],
 					"path": [
 						"booking"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get the booking which was just created",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "db50acf7-77ce-4324-b520-833d0dec5d7d",
-						"exec": [
-							"pm.test(\"Status code is 200\", () => {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"id": "09e491b4-68d5-401a-aeda-cd3d1fe4fa5c",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{baseURL}}/booking/:id",
-					"host": [
-						"{{baseURL}}"
-					],
-					"path": [
-						"booking",
-						":id"
-					],
-					"variable": [
-						{
-							"key": "id",
-							"value": "{{bookingID}}"
-						}
 					]
 				}
 			},
@@ -443,7 +403,14 @@
 							"pm.test(\"Status code is 200\", () => {\r",
 							"    pm.response.to.have.status(200);\r",
 							"});\r",
-							""
+							"\r",
+							"const response = pm.response.json();\r",
+							"pm.test(\"Booking should be changed\", () => {\r",
+							"    pm.expect(response).to.be.an('object');\r",
+							"    pm.expect(response).is.not.empty;\r",
+							"    pm.expect(response.firstname).to.eql(\"John\");\r",
+							"    pm.expect(response.lastname).to.eql(\"Lennon\");\r",
+							"});"
 						],
 						"type": "text/javascript"
 					}

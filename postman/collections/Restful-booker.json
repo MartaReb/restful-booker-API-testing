@@ -357,7 +357,18 @@
 							"    pm.expect(response).is.not.empty;\r",
 							"    pm.expect(response[0]).to.have.property('bookingid');\r",
 							"    pm.expect(response[0].bookingid).to.be.a('number');\r",
-							"});"
+							"});\r",
+							"\r",
+							"const newBooking = pm.environment.get('bookingID');\r",
+							"pm.test(\"New booking is on the list\", () => {\r",
+							"    let newNumber = false;\r",
+							"    response.forEach((item) => {\r",
+							"        if (item.bookingid === newBooking){\r",
+							"            newNumber = true;\r",
+							"        }\r",
+							"    });\r",
+							"    pm.expect(newNumber).to.eql(true);\r",
+							"})"
 						],
 						"type": "text/javascript"
 					}
@@ -478,7 +489,19 @@
 							"pm.test(\"Status code is 200\", () => {\r",
 							"    pm.response.to.have.status(200);\r",
 							"});\r",
-							""
+							"\r",
+							"const response = pm.response.json();\r",
+							"pm.test(\"Booking should be updated\", () => {\r",
+							"    pm.expect(response).to.be.an('object');\r",
+							"    pm.expect(response).is.not.empty;\r",
+							"    pm.expect(response.firstname).to.eql(\"Johnny\");\r",
+							"    pm.expect(response.lastname).to.eql(\"Cash\");\r",
+							"    pm.expect(response.totalprice).to.eql(777);\r",
+							"    pm.expect(response.depositpaid).to.eql(false);\r",
+							"    pm.expect(response.bookingdates.checkin).to.eql(\"2020-06-20\");\r",
+							"    pm.expect(response.bookingdates.checkout).to.eql(\"2020-06-30\");\r",
+							"    pm.expect(response.additionalneeds).to.eql(\"Birthday party\");\r",
+							"});"
 						],
 						"type": "text/javascript"
 					}
@@ -547,7 +570,10 @@
 							"    pm.response.to.have.status(201);\r",
 							"});\r",
 							"\r",
-							"pm.environment.unset(\"authToken\");"
+							"pm.environment.unset(\"authToken\");\r",
+							"pm.environment.unset(\"bookingID\");\r",
+							"pm.environment.unset(\"firstname\");\r",
+							"pm.environment.unset(\"lastname\");"
 						],
 						"type": "text/javascript"
 					}
